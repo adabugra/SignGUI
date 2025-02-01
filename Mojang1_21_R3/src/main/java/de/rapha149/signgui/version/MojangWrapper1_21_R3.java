@@ -17,11 +17,13 @@ import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.entity.SignText;
+import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Arrays;
 import java.util.List;
@@ -64,7 +66,7 @@ public class MojangWrapper1_21_R3 implements VersionWrapper {
     }
 
     @Override
-    public void openSignEditor(Player player, String[] textLines, Object[] adventureLines, Material type, DyeColor color, boolean glow, Location signLoc, BiConsumer<SignEditor, String[]> onFinish) {
+    public void openSignEditor(JavaPlugin plugin, Player player, String[] textLines, Object[] adventureLines, Material type, DyeColor color, boolean glow, Location signLoc, BiConsumer<SignEditor, String[]> onFinish) {
         ServerPlayer p = ((CraftPlayer) player).getHandle();
         ServerGamePacketListenerImpl conn = p.connection;
 
@@ -112,7 +114,7 @@ public class MojangWrapper1_21_R3 implements VersionWrapper {
 
                 @Override
                 public void close() {
-                    closeSignEditor(player, signEditor);
+                    closeSignEditor(plugin, player, signEditor);
                 }
 
                 @Override
@@ -156,9 +158,14 @@ public class MojangWrapper1_21_R3 implements VersionWrapper {
     }
 
     @Override
-    public void closeSignEditor(Player player, SignEditor signEditor) {
+    public void closeSignEditor(JavaPlugin plugin, Player player, SignEditor signEditor) {
         Location loc = signEditor.getLocation();
         signEditor.getPipeline().remove("SignGUI");
+        if (!Bukkit.isOwnedByCurrentRegion(loc)) {
+            Bukkit.getRegionScheduler().run(plugin, loc, task -> player.sendBlockChange(loc, loc.getBlock().getBlockData()));
+            return;
+        }
+
         player.sendBlockChange(loc, loc.getBlock().getBlockData());
     }
 }

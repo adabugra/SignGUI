@@ -67,11 +67,11 @@ public class SignGUI {
         Validate.notNull(player, "The player cannot be null");
 
         try {
-            VersionMatcher.getWrapper().openSignEditor(player, lines, adventureLines, type, color, glow, signLoc, (signEditor, resultLines) -> {
+            VersionMatcher.getWrapper().openSignEditor(plugin, player, lines, adventureLines, type, color, glow, signLoc, (signEditor, resultLines) -> {
                 Runnable runnable = () -> {
                     Runnable close = () -> {
                         try {
-                            VersionMatcher.getWrapper().closeSignEditor(player, signEditor);
+                            VersionMatcher.getWrapper().closeSignEditor(plugin, player, signEditor);
                         } catch (SignGUIVersionException e) {
                             throw new SignGUIException("Failed to close sign editor", e);
                         }
@@ -108,7 +108,7 @@ public class SignGUI {
                 };
 
                 if (callHandlerSynchronously)
-                    Bukkit.getScheduler().runTask(plugin, runnable);
+                    player.getScheduler().run(plugin, task -> runnable.run(), null);
                 else
                     runnable.run();
             });
