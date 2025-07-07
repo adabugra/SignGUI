@@ -5,6 +5,7 @@ import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -39,7 +40,7 @@ public interface VersionWrapper {
      * @param signLoc  The location where the sign should be placed. Can be null for default.
      * @param onFinish The {@link java.util.function.BiConsumer} which is called when the player finished editing the sign.
      */
-    void openSignEditor(Player player, String[] lines, Object[] adventureLines, Material type, DyeColor color, boolean glow, Location signLoc, BiConsumer<SignEditor, String[]> onFinish) throws Exception;
+    void openSignEditor(JavaPlugin plugin, Player player, String[] lines, Object[] adventureLines, Material type, DyeColor color, boolean glow, Location signLoc, BiConsumer<SignEditor, String[]> onFinish) throws Exception;
 
     /**
      * Called when the lines of a sign should be updated.
@@ -56,7 +57,7 @@ public interface VersionWrapper {
      * @param player The player to whom the sign was shown to.
      * @param signEditor The sign editor.
      */
-    void closeSignEditor(Player player, SignEditor signEditor);
+    void closeSignEditor(JavaPlugin plugin, Player player, SignEditor signEditor);
 
     /**
      * Get the default location where the sign should be placed for the player.
